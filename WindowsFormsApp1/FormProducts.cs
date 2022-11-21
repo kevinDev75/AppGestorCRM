@@ -17,9 +17,11 @@ namespace WindowsFormsApp1
     public partial class FormProducts : RJCodeUI_M1.RJForms.RJChildForm
     {
         ProductService serviceAgent = new ProductService();
+        List<ProductoDetailDTO> listserach = new List<ProductoDetailDTO>();
         public FormProducts()
         {
             InitializeComponent();
+           
             this.GetDemografia();
             this.GetEditorial();
            // rjDgvListProduct.DataSource = new Product().GetProductsList();
@@ -28,7 +30,11 @@ namespace WindowsFormsApp1
         private void btnAddNew_Click(object sender, EventArgs e)
         {
             var frmProduct = new FormProductRegister();
-            frmProduct.ShowDialog();
+            if (frmProduct.ShowDialog() == DialogResult.OK)
+            {
+                this.Search();
+            }
+
         }
         private void GetDemografia()
         {
@@ -57,21 +63,27 @@ namespace WindowsFormsApp1
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            string id = rjDgvListProduct.CurrentRow.Cells[0].Value.ToString();
+            int indice =Convert.ToInt32(rjDgvListProduct.CurrentRow?.Index.ToString());
+           int id= Convert.ToInt32(rjDgvListProduct.Rows[indice].Cells[0].Value);
             //var product = new Product().GetProductsList().FirstOrDefault(t=>t.Id==id);
 
-           var frmProduct = new FormProductRegister(int.Parse(id),true);
-            frmProduct.ShowDialog();
+           var frmProduct = new FormProductRegister(id,true);
+            
+            if(frmProduct.ShowDialog() == DialogResult.OK)
+            {
+                this.Search();
+            }
+             
         }
 
         private void Search()
         {
             
-              SearchProductDTO dtoSearch = new SearchProductDTO();
+            SearchProductDTO dtoSearch = new SearchProductDTO();
             dtoSearch.texto = txtbuscar.Text;
-            dtoSearch.demografia = (cboDemografia.SelectedValue.ToString() != "0" ? cboDemografia.SelectedValue.ToString() : string.Empty);
-            dtoSearch.editorial= (cboEditorial.SelectedValue.ToString() != "0" ? cboEditorial.SelectedValue.ToString() : string.Empty);
-            List<ProductoDetailDTO> listserach = serviceAgent.SearchProduct(dtoSearch);
+            dtoSearch.demografia = (cboDemografia.SelectedValue?.ToString() != "0" && cboDemografia.SelectedValue?.ToString() != null ? cboDemografia.SelectedValue.ToString() : string.Empty);
+            dtoSearch.editorial= (cboEditorial.SelectedValue?.ToString() != "0" && cboDemografia.SelectedValue?.ToString() != null ? cboEditorial.SelectedValue.ToString() : string.Empty);
+             listserach = serviceAgent.SearchProduct(dtoSearch);
             if(listserach.Count > 0)
             {
                 //var bindingList = new BindingList<ProductoDetailDTO>(listserach);
@@ -134,6 +146,18 @@ namespace WindowsFormsApp1
         private void cboDemografia_OnSelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void BtnEliminar_Click(object sender, EventArgs e)
+        {
+
+            int indice = Convert.ToInt32(rjDgvListProduct.CurrentRow?.Index.ToString());
+            string id = rjDgvListProduct.Rows[indice].Cells[0].Value.ToString();
+            ProductoDTO obj = new ProductoDTO();
+            obj.id_prod = id;
+            serviceAgent.DeleteProduct(obj);
+            this.Search();
+            var rptok = RJMessageBox.Show("Se Eliminó Correctamente!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

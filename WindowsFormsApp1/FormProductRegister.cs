@@ -166,7 +166,10 @@ namespace WindowsFormsApp1
                     {
                         var rptok = RJMessageBox.Show("Se " + (indEdit == 0 ? "registro" : "actualizo" )  +" Correctamente!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         if(rptok == DialogResult.OK){
+                            this.DialogResult = DialogResult.OK;
                             this.Close();
+                       
+
                         }
                     }
                     else 

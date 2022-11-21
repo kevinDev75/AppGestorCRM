@@ -123,6 +123,20 @@ namespace AppKST.Service.ProductModule
             var apiResponse = JsonConvert.DeserializeObject<ApiResponseDTO>(_response);
             return apiResponse;
         }
+        public ApiResponseDTO DeleteProduct(ProductoDTO objproducto)
+        {
+            string json = JsonConvert.SerializeObject(objproducto, Formatting.Indented);
+            var _response = ConsumeService.ConsumirAPI(
+                json,
+                baseURL,
+                servicePrefix,
+                "Product/DeleteProduct",
+                Enums.Method.POST);
+
+            var apiResponse = JsonConvert.DeserializeObject<ApiResponseDTO>(_response);
+            return apiResponse;
+        }
+
 
         public ProductoDetailDTO getProductxID(int id)
         {
